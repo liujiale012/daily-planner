@@ -12,23 +12,23 @@ const navItems = [
 
 export function Sidebar() {
   return (
-    <aside className="hidden h-screen w-60 flex-shrink-0 border-r border-gray-200 bg-white dark:border-gray-700 dark:bg-slate-800 lg:flex">
+    <aside className="hidden h-screen w-64 flex-shrink-0 bg-transparent lg:flex">
       <div className="flex h-full flex-col">
-        <div className="px-5 py-4">
-          <span className="text-lg font-semibold text-indigo-600 dark:text-indigo-400">
+        <div className="px-6 py-6">
+          <span className="text-xl font-semibold tracking-tight text-pink-500">
             Daily Planner
           </span>
         </div>
-        <nav className="flex-1 space-y-1 px-3 py-2">
+        <nav className="flex-1 space-y-2 px-4 pb-6">
           {navItems.map(({ to, label, icon: Icon }) => (
             <NavLink
               key={to}
               to={to}
               className={({ isActive }) =>
-                `flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
+                `flex items-center gap-3 rounded-2xl px-4 py-2.5 text-sm font-medium transition-all ${
                   isActive
-                    ? 'bg-indigo-50 text-indigo-600 dark:bg-indigo-900/20 dark:text-indigo-400'
-                    : 'text-gray-600 hover:bg-gray-50 dark:text-gray-400 dark:hover:bg-gray-700/50'
+                    ? 'bg-white/80 text-pink-500 shadow-[0_12px_30px_rgba(244,114,182,0.35)]'
+                    : 'text-slate-500 hover:bg-white/60 hover:text-pink-500'
                 }`
               }
             >

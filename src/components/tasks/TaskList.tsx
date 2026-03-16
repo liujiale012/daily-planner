@@ -28,7 +28,7 @@ export function TaskList({
         </h2>
       )}
       {tasks.length === 0 ? (
-        <p className="rounded-xl border border-dashed border-gray-200 bg-gray-50 py-8 text-center text-sm text-gray-500 dark:border-gray-700 dark:bg-gray-800/50 dark:text-gray-400">
+        <p className="rounded-3xl border border-dashed border-[#f5e7d0] bg-[#fff7ee] py-8 text-center text-sm text-[#b58a6a]">
           {emptyMessage}
         </p>
       ) : (

@@ -2,12 +2,44 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --accent: 79 70 229;
-}
-
 body {
   margin: 0;
   min-height: 100vh;
   font-family: system-ui, -apple-system, sans-serif;
+  /* 橙色系背景，参考示例海报 */
+  background: radial-gradient(circle at top left, #f9632f 0, #ffb06a 40%, #fff3e2 100%);
+  color: #2b1c1a;
+}
+
+@keyframes bubble-up {
+  0% {
+    transform: translateY(40px) scale(0.9);
+    opacity: 0;
+  }
+  15% {
+    opacity: 1;
+  }
+  70% {
+    transform: translateY(-190px) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-230px) scale(1.05);
+    opacity: 0;
+  }
+}
+
+.treehole-bubble {
+  position: absolute;
+  animation: bubble-up 4.5s ease-in-out infinite;
+}
+
+html.dark body {
+  background: radial-gradient(circle at top left, #020617 0, #020617 35%, #0f172a 70%, #020617 100%);
+  color: #e5e7eb;
+}
+
+:root {
+  /* 橙色主强调色，参考示例海报 */
+  --accent: 249 99 47; /* #F9632F */
 }

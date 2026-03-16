@@ -11,6 +11,7 @@ interface TaskState {
   deleteTask: (id: string) => void;
   toggleComplete: (id: string) => void;
   toggleStarred: (id: string) => void;
+  incrementPomodoroCount: (id: string) => void;
   replaceState: (tasks: Task[], categories: string[]) => void;
 }
 
@@ -43,6 +44,18 @@ export const useTaskStore = create<TaskState>()(
       toggleStarred: (id) =>
         set((s) => ({
           tasks: s.tasks.map((t) => (t.id === id ? { ...t, starred: !t.starred } : t)),
+        })),
+      incrementPomodoroCount: (id) =>
+        set((s) => ({
+          tasks: s.tasks.map((t) =>
+            t.id === id
+              ? {
+                  ...t,
+                  pomodoroCount: (t.pomodoroCount ?? 0) + 1,
+                  updatedAt: new Date().toISOString(),
+                }
+              : t
+          ),
         })),
       replaceState: (tasks, categories) => set({ tasks, categories }),
     }),

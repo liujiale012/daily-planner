@@ -11,6 +11,8 @@ export interface Task {
   completed: boolean;
   starred: boolean;
   repeatType: RepeatType;
+  /** 已为此任务完成的番茄钟轮数 */
+  pomodoroCount: number;
   createdAt: string;
   updatedAt: string;
   completedAt: string | null;

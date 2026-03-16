@@ -20,6 +20,7 @@ export function createTask(partial: {
     completed: false,
     starred: partial.starred ?? false,
     repeatType: partial.repeatType ?? 'none',
+    pomodoroCount: 0,
     createdAt: now,
     updatedAt: now,
     completedAt: null,
