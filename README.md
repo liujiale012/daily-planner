@@ -27,11 +27,8 @@
 ![数据统计面板](./screenshots/stats.png)
 *数据看板：专注时长、情绪趋势、任务完成率*
 
-> 💡 提示：请将你的截图放在项目根目录下的 `screenshots/` 文件夹中，并确保文件名一致（如 `home.png`, `chat.png` 等）
 
----
 
-## 🚀 快速开始
 
 ### 本地运行
 
@@ -41,8 +38,6 @@ cd daily-planner
 npm install
 npm run dev
 访问 http://localhost:5173 即可体验。
-在线演示
-👉 https://daily-planner-gules-two.vercel.app
 技术栈
 前端：React + TypeScript + Vite + Tailwind CSS
 后端：Supabase (Vector DB + Auth)
