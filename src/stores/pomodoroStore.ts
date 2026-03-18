@@ -30,8 +30,8 @@ interface PomodoroState {
   setBreakMinutes: (m: number) => void;
   setCustomMinutes: (m: number) => void;
   setSecondsLeft: (updater: number | ((prev: number) => number)) => void;
-  setIsRunning: (r: boolean) => void;
-  setIsBreak: (b: boolean) => void;
+  setIsRunning: (updater: boolean | ((prev: boolean) => boolean)) => void;
+  setIsBreak: (updater: boolean | ((prev: boolean) => boolean)) => void;
   setCurrentTaskId: (id: string | 'none') => void;
 }
 
@@ -88,8 +88,20 @@ export const usePomodoroStore = create<PomodoroState>()(
               ? (updater as (prev: number) => number)(s.secondsLeft)
               : updater,
         })),
-      setIsRunning: (isRunning) => set(() => ({ isRunning })),
-      setIsBreak: (isBreak) => set(() => ({ isBreak })),
+      setIsRunning: (updater) =>
+        set((s) => ({
+          isRunning:
+            typeof updater === 'function'
+              ? (updater as (prev: boolean) => boolean)(s.isRunning)
+              : updater,
+        })),
+      setIsBreak: (updater) =>
+        set((s) => ({
+          isBreak:
+            typeof updater === 'function'
+              ? (updater as (prev: boolean) => boolean)(s.isBreak)
+              : updater,
+        })),
       setCurrentTaskId: (currentTaskId) => set(() => ({ currentTaskId })),
     }),
     {

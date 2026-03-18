@@ -15,7 +15,7 @@ function formatTime(seconds: number) {
 }
 
 export function PomodoroPage() {
-  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const intervalRef = useRef<number | null>(null);
   const {
     mode,
     focusMinutes,
@@ -67,7 +67,7 @@ export function PomodoroPage() {
       setSecondsLeft((prev) => {
         if (prev <= 1) {
           setIsRunning(false);
-          if (intervalRef.current) clearInterval(intervalRef.current);
+          if (intervalRef.current) window.clearInterval(intervalRef.current);
           const finishedAt = new Date().toISOString();
           if (mode === 'custom') {
             const messages = [
@@ -110,13 +110,13 @@ export function PomodoroPage() {
       });
     }, 1000);
     return () => {
-      if (intervalRef.current) clearInterval(intervalRef.current);
+      if (intervalRef.current) window.clearInterval(intervalRef.current);
     };
   }, [isRunning, isBreak]);
 
   const handleReset = () => {
     setIsRunning(false);
-    if (intervalRef.current) clearInterval(intervalRef.current);
+    if (intervalRef.current) window.clearInterval(intervalRef.current);
     if (mode === 'custom') {
       setSecondsLeft(customMinutes * 60);
     } else {
@@ -127,7 +127,7 @@ export function PomodoroPage() {
   const handleSwitchMode = () => {
     if (mode === 'custom') return;
     setIsRunning(false);
-    if (intervalRef.current) clearInterval(intervalRef.current);
+    if (intervalRef.current) window.clearInterval(intervalRef.current);
     setIsBreak((b) => !b);
     setSecondsLeft((!isBreak ? breakMinutes : focusMinutes) * 60);
   };
