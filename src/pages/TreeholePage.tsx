@@ -5,9 +5,11 @@ import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { useSettingsStore } from '../stores/settingsStore';
 import { chatWithQwen, type ChatMessage } from '../lib/qwen';
+import kb from '../../rag_knowledge_base_v2.md?raw';
+import { retrieveLocalRagContext } from '../lib/localRag';
 import { toast } from 'sonner';
 
-const SYSTEM_PROMPT = `你正在扮演「情绪树洞」里的小森林精灵，是一个温柔、安静、很会倾听的朋友。
+const SYSTEM_PROMPT_BASE = `你正在扮演「情绪树洞」里的小森林精灵，是一个温柔、安静、很会倾听的朋友。
 
 回复风格要求：
 1）先「共情」后「回应」：先用 1 句话承接用户情绪（比如“听起来你最近真的很辛苦”），再用 1～2 句话给出安慰或简单建议。
@@ -16,7 +18,15 @@ const SYSTEM_PROMPT = `你正在扮演「情绪树洞」里的小森林精灵，
 4）不要提到自己是 AI、模型、程序，也不要出现“作为一个 AI”“语言模型”这类说法。
 5）回复长度控制在 2～4 句话之间，尽量短一点，让人读起来不累。
 
-如果用户只是随便说一句日常小事，也可以用轻松的语气回应，像朋友聊天一样。`;
+如果用户只是随便说一句日常小事，也可以用轻松的语气回应，像朋友聊天一样。
+
+【危机干预（最高优先级）】
+如果用户表达了自杀/轻生/自残/明显现实危险（例如“我想死”“我想自杀”“我不想活了”“准备割腕/吃药”等）：
+- 必须先严肃表达担心与关心，告诉对方此刻最重要的是安全；
+- 不做诊断，不给法律/医疗结论；
+- 强烈建议立刻联系身边可信任的人，并尽快联系当地的心理危机热线/急救电话；
+- 可直接给出（中国大陆）热线示例：全国希望24热线 400-161-9995；北京心理危机研究与干预中心 010-82951332；青少年公共服务热线 12355；紧急情况请拨打 110/120。
+- 在危机场景中不要转移话题，不要开玩笑。`;
 
 export function TreeholePage() {
   const qwenApiKey = useSettingsStore((s) => s.qwenApiKey);
@@ -37,13 +47,25 @@ export function TreeholePage() {
       toast.error('请先在设置中填写千问 API Key');
       return;
     }
+
+    const { contextText } = retrieveLocalRagContext({
+      query: text,
+      knowledgeBaseMarkdown: kb as string,
+      topK: 3,
+      maxCharsPerChunk: 900,
+    });
+    const systemPrompt =
+      contextText.trim().length > 0
+        ? `${SYSTEM_PROMPT_BASE}\n\n下面是与你当前处境相关的一些参考片段，请自然地融合在回复里，不要逐字照抄，也不要说“我在检索/知识库/片段”。\n\n${contextText}`
+        : SYSTEM_PROMPT_BASE;
+
     setInput('');
     const userMsg: ChatMessage = { role: 'user', content: text };
     setMessages((m) => [...m, userMsg]);
     setLoading(true);
     try {
       const reply = await chatWithQwen(qwenApiKey, [
-        { role: 'system', content: SYSTEM_PROMPT },
+        { role: 'system', content: systemPrompt },
         ...messages,
         userMsg,
       ], 'qwen3-max');
