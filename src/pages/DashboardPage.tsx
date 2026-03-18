@@ -16,9 +16,14 @@ import type { Task } from '../types';
 export function DashboardPage() {
   const { tasks, categories, toggleComplete, toggleStarred, deleteTask } = useTaskStore();
   const stats = useStats();
-  const todayTasks = tasks.filter(
-    (t) => t.deadline && dayjs(t.deadline).isSame(dayjs(), 'day')
-  );
+  const todayTasks = tasks.filter((t) => {
+    const now = dayjs();
+    const isDueToday = !!t.deadline && dayjs(t.deadline).isSame(now, 'day');
+    // 兼容「不填截止日期」的任务：创建于今天也算今日任务，避免首页不更新
+    const isCreatedTodayWithoutDeadline =
+      !t.deadline && !!t.createdAt && dayjs(t.createdAt).isSame(now, 'day');
+    return isDueToday || isCreatedTodayWithoutDeadline;
+  });
   const [modalOpen, setModalOpen] = useState(false);
   const [editTask, setEditTask] = useState<Task | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<Task | null>(null);

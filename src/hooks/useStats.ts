@@ -7,7 +7,12 @@ export function useStats() {
   const tasks = useTaskStore((s) => s.tasks);
   return useMemo(() => {
     const now = dayjs();
-    const todayTasks = tasks.filter((t) => t.deadline && dayjs(t.deadline).isSame(now, 'day'));
+    const todayTasks = tasks.filter((t) => {
+      const isDueToday = !!t.deadline && dayjs(t.deadline).isSame(now, 'day');
+      const isCreatedTodayWithoutDeadline =
+        !t.deadline && !!t.createdAt && dayjs(t.createdAt).isSame(now, 'day');
+      return isDueToday || isCreatedTodayWithoutDeadline;
+    });
     const completedToday = todayTasks.filter((t) => t.completed).length;
     const totalToday = todayTasks.length;
     const overdueCount = tasks.filter((t) => isOverdue(t.deadline, t.completed)).length;
