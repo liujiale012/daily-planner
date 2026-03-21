@@ -10,20 +10,13 @@ import { TodayGoal } from '../components/dashboard/TodayGoal';
 import { TrendChart } from '../components/stats/TrendChart';
 import { useTaskStore } from '../stores/taskStore';
 import { useStats } from '../hooks/useStats';
-import dayjs from 'dayjs';
 import type { Task } from '../types';
+import { isTaskDueToday } from '../lib/today-tasks-filter';
 
 export function DashboardPage() {
   const { tasks, categories, toggleComplete, toggleStarred, deleteTask } = useTaskStore();
   const stats = useStats();
-  const todayTasks = tasks.filter((t) => {
-    const now = dayjs();
-    const isDueToday = !!t.deadline && dayjs(t.deadline).isSame(now, 'day');
-    // 兼容「不填截止日期」的任务：创建于今天也算今日任务，避免首页不更新
-    const isCreatedTodayWithoutDeadline =
-      !t.deadline && !!t.createdAt && dayjs(t.createdAt).isSame(now, 'day');
-    return isDueToday || isCreatedTodayWithoutDeadline;
-  });
+  const todayTasks = tasks.filter((t) => isTaskDueToday(t));
   const [modalOpen, setModalOpen] = useState(false);
   const [editTask, setEditTask] = useState<Task | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<Task | null>(null);

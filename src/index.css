@@ -43,3 +43,12 @@ html.dark body {
   /* 橙色主强调色，参考示例海报 */
   --accent: 249 99 47; /* #F9632F */
 }
+
+/* 番茄钟滑轮：隐藏滚动条但保留滚动 */
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}

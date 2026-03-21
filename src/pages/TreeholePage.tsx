@@ -9,6 +9,35 @@ import kb from '../../rag_knowledge_base_v2.md?raw';
 import { retrieveLocalRagContext } from '../lib/localRag';
 import { toast } from 'sonner';
 
+const TREEHOLE_STORAGE_PREFIX = 'daily-planner-treehole';
+const TREEHOLE_COLLAPSE_FLAG = 'treehole-collapse-next';
+
+function treeholeStorageKey(date: string) {
+  return `${TREEHOLE_STORAGE_PREFIX}-${date}`;
+}
+
+function loadTodayMessages(today: string): ChatMessage[] {
+  try {
+    const raw = localStorage.getItem(treeholeStorageKey(today));
+    if (!raw) return [];
+    const parsed = JSON.parse(raw) as { date?: string; messages?: ChatMessage[] };
+    if (parsed.date !== today || !Array.isArray(parsed.messages)) return [];
+    return parsed.messages.filter(
+      (m) => m && (m.role === 'user' || m.role === 'assistant') && typeof m.content === 'string'
+    );
+  } catch {
+    return [];
+  }
+}
+
+function saveTodayMessages(today: string, messages: ChatMessage[]) {
+  try {
+    localStorage.setItem(treeholeStorageKey(today), JSON.stringify({ date: today, messages }));
+  } catch {
+    /* ignore quota */
+  }
+}
+
 const SYSTEM_PROMPT_BASE = `你正在扮演「情绪树洞」里的小森林精灵，是一个温柔、安静、很会倾听的朋友。
 
 回复风格要求：
@@ -33,12 +62,38 @@ export function TreeholePage() {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
+  /** false：从其他页返回后折叠，仅显示入口；true：可向上翻阅当日全部记录 */
+  const [historyExpanded, setHistoryExpanded] = useState(true);
+  const [hydrated, setHydrated] = useState(false);
   const listRef = useRef<HTMLDivElement>(null);
+  const todayStr = dayjs().format('YYYY-MM-DD');
   const now = dayjs();
 
+  // 首屏：读当日记录；若带「返回折叠」标记且有记录则默认折叠
   useEffect(() => {
+    const loaded = loadTodayMessages(todayStr);
+    let collapse = false;
+    try {
+      collapse = sessionStorage.getItem(TREEHOLE_COLLAPSE_FLAG) === '1';
+      if (collapse) sessionStorage.removeItem(TREEHOLE_COLLAPSE_FLAG);
+    } catch {
+      /* ignore */
+    }
+    setMessages(loaded);
+    setHistoryExpanded(!(collapse && loaded.length > 0));
+    setHydrated(true);
+  }, [todayStr]);
+
+  // 持久化当日聊天记录（跨天自动换 key，旧天不读即视为刷新）
+  useEffect(() => {
+    if (!hydrated) return;
+    saveTodayMessages(todayStr, messages);
+  }, [messages, todayStr, hydrated]);
+
+  useEffect(() => {
+    if (!historyExpanded) return;
     listRef.current?.scrollTo({ top: listRef.current.scrollHeight, behavior: 'smooth' });
-  }, [messages]);
+  }, [messages, loading, historyExpanded]);
 
   const send = async () => {
     const text = input.trim();
@@ -47,6 +102,8 @@ export function TreeholePage() {
       toast.error('请先在设置中填写千问 API Key');
       return;
     }
+
+    setHistoryExpanded(true);
 
     const { contextText } = retrieveLocalRagContext({
       query: text,
@@ -97,34 +154,57 @@ export function TreeholePage() {
         </div>
       )}
 
-      <main className="flex flex-1 gap-6 rounded-[32px] bg-[#fff9ee]/80 p-6 shadow-inner">
-        <section className="flex-1 rounded-3xl border border-[#f4e2c5] bg-[#fffaf1] px-6 py-5 shadow-[0_18px_60px_rgba(190,140,90,0.18)]">
-          <p className="mb-3 text-xs text-[#c9a985]">
+      <main className="flex min-h-0 flex-1 gap-6 rounded-[32px] bg-[#fff9ee]/80 p-6 shadow-inner">
+        <section className="flex min-h-0 flex-1 flex-col rounded-3xl border border-[#f4e2c5] bg-[#fffaf1] px-6 py-5 shadow-[0_18px_60px_rgba(190,140,90,0.18)]">
+          <p className="mb-1 text-xs text-[#c9a985]">
             随便说点什么吧，我会在这里听。
           </p>
-          <div
-            ref={listRef}
-            className="h-full space-y-3 overflow-y-auto pr-2 text-sm leading-relaxed text-[#80543b]"
-          >
-            {messages.length === 0 && !loading && (
-              <p className="mt-8 text-center text-xs text-[#c9a985]">
-                把你的烦恼轻轻写在这里吧…
-              </p>
-            )}
-            {messages.map((msg, i) => (
-              <p
-                key={i}
-                className={`whitespace-pre-wrap ${
-                  msg.role === 'user' ? 'text-right text-[#a96d4b]' : 'text-left'
-                }`}
+          {messages.length > 0 && (
+            <p className="mb-3 text-[11px] leading-relaxed text-[#b58a6a]">
+              <button
+                type="button"
+                onClick={() => setHistoryExpanded((v) => !v)}
+                className="cursor-pointer border-0 bg-transparent p-0 text-left underline decoration-[#c9a985]/80 underline-offset-2 transition-colors hover:text-[#a96d4b] hover:decoration-[#a96d4b]"
               >
-                {msg.content}
+                {historyExpanded ? '收起历史聊天记录' : '点击查看历史聊天记录'}
+              </button>
+              <span className="ml-2 text-[#c9a985]/90">
+                （仅保存当天，次日自动重新开始）
+              </span>
+            </p>
+          )}
+
+          {historyExpanded ? (
+            <div
+              ref={listRef}
+              className="min-h-0 flex-1 space-y-3 overflow-y-auto pr-2 text-sm leading-relaxed text-[#80543b]"
+            >
+              {messages.length === 0 && !loading && (
+                <p className="mt-8 text-center text-xs text-[#c9a985]">
+                  把你的烦恼轻轻写在这里吧…
+                </p>
+              )}
+              {messages.map((msg, i) => (
+                <p
+                  key={`${todayStr}-${i}-${msg.role}`}
+                  className={`whitespace-pre-wrap ${
+                    msg.role === 'user' ? 'text-right text-[#a96d4b]' : 'text-left'
+                  }`}
+                >
+                  {msg.content}
+                </p>
+              ))}
+              {loading && (
+                <p className="text-xs text-[#c9a985]">正在认真听你说话中…</p>
+              )}
+            </div>
+          ) : (
+            <div className="flex min-h-[120px] flex-1 flex-col items-center justify-center rounded-2xl border border-dashed border-[#f0dfc8] bg-[#fffdf9]/80 px-4 py-6 text-center">
+              <p className="text-xs text-[#c9a985]">
+                今天的对话已暂时收起，点击下方链接可向上翻阅全部记录。
               </p>
-            ))}
-            {loading && (
-              <p className="text-xs text-[#c9a985]">正在认真听你说话中…</p>
-            )}
-          </div>
+            </div>
+          )}
         </section>
 
         <aside className="hidden w-52 flex-shrink-0 items-stretch justify-center lg:flex">

@@ -1,9 +1,28 @@
-import { ReactNode } from 'react';
+import { ReactNode, useEffect, useRef } from 'react';
+import { useLocation } from 'react-router-dom';
 import { Sidebar } from './Sidebar';
 import { Header } from './Header';
 import { MobileNav } from './MobileNav';
 
+const TREEHOLE_COLLAPSE_FLAG = 'treehole-collapse-next';
+
 export function Layout({ children }: { children: ReactNode }) {
+  const location = useLocation();
+  const prevPathRef = useRef(location.pathname);
+
+  useEffect(() => {
+    const prev = prevPathRef.current;
+    const cur = location.pathname;
+    if (prev.startsWith('/treehole') && !cur.startsWith('/treehole')) {
+      try {
+        sessionStorage.setItem(TREEHOLE_COLLAPSE_FLAG, '1');
+      } catch {
+        /* ignore */
+      }
+    }
+    prevPathRef.current = cur;
+  }, [location.pathname]);
+
   return (
     <div className="min-h-screen px-3 py-4 text-slate-900">
       <div className="mx-auto flex min-h-[calc(100vh-2rem)] max-w-6xl overflow-hidden rounded-[32px] bg-white/70 shadow-[0_24px_80px_rgba(15,23,42,0.18)] backdrop-blur-xl">

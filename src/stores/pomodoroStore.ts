@@ -7,9 +7,21 @@ export interface PomodoroSession {
   finishedAt: string;
   /** 本轮专注时长（分钟），用于统计 */
   durationMinutes: number;
+  /** 本轮专注模块（展示用） */
+  focusModuleLabel?: string | null;
 }
 
 export type PomodoroMode = 'pomodoro' | 'custom';
+
+/** 专注场景模块：需先选择再开始计时 */
+export type FocusModuleId =
+  | 'none'
+  | 'study'
+  | 'sport'
+  | 'research'
+  | 'work'
+  | 'today_task'
+  | 'custom';
 
 interface PomodoroState {
   sessions: PomodoroSession[];
@@ -22,6 +34,11 @@ interface PomodoroState {
   isRunning: boolean;
   isBreak: boolean;
   currentTaskId: string | 'none';
+  focusModule: FocusModuleId;
+  /** 选择「自定义」时的说明 */
+  focusModuleCustomLabel: string;
+  /** 选择「今日任务」时绑定的任务 id */
+  focusTodayTaskId: string | 'none';
 
   addSession: (session: Omit<PomodoroSession, 'id'>) => void;
 
@@ -33,6 +50,9 @@ interface PomodoroState {
   setIsRunning: (updater: boolean | ((prev: boolean) => boolean)) => void;
   setIsBreak: (updater: boolean | ((prev: boolean) => boolean)) => void;
   setCurrentTaskId: (id: string | 'none') => void;
+  setFocusModule: (id: FocusModuleId) => void;
+  setFocusModuleCustomLabel: (label: string) => void;
+  setFocusTodayTaskId: (id: string | 'none') => void;
 }
 
 export const usePomodoroStore = create<PomodoroState>()(
@@ -47,6 +67,9 @@ export const usePomodoroStore = create<PomodoroState>()(
       isRunning: false,
       isBreak: false,
       currentTaskId: 'none',
+      focusModule: 'none',
+      focusModuleCustomLabel: '',
+      focusTodayTaskId: 'none',
       addSession: (session) =>
         set((s) => ({
           sessions: [
@@ -103,6 +126,13 @@ export const usePomodoroStore = create<PomodoroState>()(
               : updater,
         })),
       setCurrentTaskId: (currentTaskId) => set(() => ({ currentTaskId })),
+      setFocusModule: (focusModule) =>
+        set((s) => ({
+          focusModule,
+          focusTodayTaskId: focusModule === 'today_task' ? s.focusTodayTaskId : 'none',
+        })),
+      setFocusModuleCustomLabel: (focusModuleCustomLabel) => set(() => ({ focusModuleCustomLabel })),
+      setFocusTodayTaskId: (focusTodayTaskId) => set(() => ({ focusTodayTaskId })),
     }),
     {
       name: 'daily-planner-pomodoro',

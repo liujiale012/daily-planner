@@ -23,12 +23,28 @@ export function usePomodoroStats() {
     const sumMinutes = (items: typeof sessions) =>
       items.reduce((acc, s) => acc + (s.durationMinutes ?? 25), 0);
 
+    /** 今日按「专注模块」汇总时长（仅统计带 focusModuleLabel 的完成记录，累加同名字段） */
+    const todayWithModuleLabel = today.filter(
+      (s) => typeof s.focusModuleLabel === 'string' && s.focusModuleLabel.trim().length > 0
+    );
+    const moduleMinutesMap = new Map<string, number>();
+    for (const s of todayWithModuleLabel) {
+      const label = s.focusModuleLabel!.trim();
+      const m = s.durationMinutes ?? 25;
+      moduleMinutesMap.set(label, (moduleMinutesMap.get(label) ?? 0) + m);
+    }
+    const todayModuleBreakdown = Array.from(moduleMinutesMap.entries())
+      .map(([label, minutes]) => ({ label, minutes }))
+      .filter((x) => x.minutes > 0)
+      .sort((a, b) => b.minutes - a.minutes || a.label.localeCompare(b.label, 'zh-CN'));
+
     return {
       todayCount: today.length,
       weekCount: week.length,
       todayMinutes: sumMinutes(today),
       weekMinutes: sumMinutes(week),
       last7Days,
+      todayModuleBreakdown,
     };
   }, [sessions]);
 }
