@@ -19,6 +19,7 @@
 ## 🖼️ 项目预览
 
 ![首页界面](./screenshots/home.png)
+(./screenshots/st.png)
 *首页：今日任务 + 情绪入口 + 番茄钟状态*
 
 ![情绪树洞对话](./screenshots/chat.png)
