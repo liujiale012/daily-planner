@@ -1,6 +1,11 @@
 /** 轻量滑轮刻度音（无需音频文件，Web Audio） */
 let sharedCtx: AudioContext | null = null;
 
+/** 与秒针音、雨声共用同一 AudioContext */
+export function getSharedAudioContext(): AudioContext | null {
+  return getCtx();
+}
+
 function getCtx(): AudioContext | null {
   if (typeof window === 'undefined') return null;
   try {
@@ -47,21 +52,3 @@ export function playWheelTick(pitchHz = 880): void {
   osc.stop(t0 + 0.05);
 }
 
-/** 钟表秒针式轻叩（略低频、略短），与整秒倒计时同步 */
-export function playSecondHandTick(): void {
-  const ctx = getCtx();
-  if (!ctx) return;
-
-  const t0 = ctx.currentTime;
-  const osc = ctx.createOscillator();
-  const gain = ctx.createGain();
-  osc.type = 'triangle';
-  osc.frequency.setValueAtTime(520, t0);
-  gain.gain.setValueAtTime(0.0001, t0);
-  gain.gain.exponentialRampToValueAtTime(0.055, t0 + 0.006);
-  gain.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.038);
-  osc.connect(gain);
-  gain.connect(ctx.destination);
-  osc.start(t0);
-  osc.stop(t0 + 0.042);
-}

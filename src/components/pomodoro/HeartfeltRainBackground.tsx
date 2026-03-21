@@ -15,25 +15,41 @@ function compileShader(gl: WebGL2RenderingContext, type: number, source: string)
   return s;
 }
 
-function createWarmBackTexture(gl: WebGL2RenderingContext): WebGLTexture {
+/**
+ * iChannel0：贴近 Shadertoy Heartfelt 默认的「室内暗景透过玻璃」——偏冷灰蓝、中心略亮，便于着色器闪电/色调叠加。
+ */
+function createHeartfeltChannel0Texture(gl: WebGL2RenderingContext): WebGLTexture {
   const tex = gl.createTexture()!;
   const size = 512;
   const c = document.createElement('canvas');
   c.width = c.height = size;
   const ctx = c.getContext('2d')!;
-  const g = ctx.createRadialGradient(size * 0.5, size * 0.42, 0, size * 0.5, size * 0.52, size * 0.78);
-  g.addColorStop(0, '#5c4030');
-  g.addColorStop(0.25, '#2a1810');
-  g.addColorStop(0.65, '#140c08');
-  g.addColorStop(1, '#060302');
-  ctx.fillStyle = g;
+  const lg = ctx.createLinearGradient(0, 0, size, size);
+  lg.addColorStop(0, '#1c222e');
+  lg.addColorStop(0.35, '#12161c');
+  lg.addColorStop(0.7, '#0a0c10');
+  lg.addColorStop(1, '#040508');
+  ctx.fillStyle = lg;
+  ctx.fillRect(0, 0, size, size);
+  const rg = ctx.createRadialGradient(
+    size * 0.38,
+    size * 0.32,
+    0,
+    size * 0.45,
+    size * 0.42,
+    size * 0.72
+  );
+  rg.addColorStop(0, 'rgba(55, 65, 85, 0.55)');
+  rg.addColorStop(0.45, 'rgba(28, 34, 44, 0.22)');
+  rg.addColorStop(1, 'rgba(8, 10, 14, 0)');
+  ctx.fillStyle = rg;
   ctx.fillRect(0, 0, size, size);
   const img = ctx.getImageData(0, 0, size, size);
   for (let i = 0; i < img.data.length; i += 4) {
-    const n = (Math.random() - 0.5) * 14;
-    img.data[i] = Math.min(255, Math.max(0, img.data[i] + n));
-    img.data[i + 1] = Math.min(255, Math.max(0, img.data[i + 1] + n * 0.75));
-    img.data[i + 2] = Math.min(255, Math.max(0, img.data[i + 2] + n * 0.45));
+    const n = (Math.random() - 0.5) * 10;
+    img.data[i] = Math.min(255, Math.max(0, img.data[i] + n * 0.9));
+    img.data[i + 1] = Math.min(255, Math.max(0, img.data[i + 1] + n * 0.95));
+    img.data[i + 2] = Math.min(255, Math.max(0, img.data[i + 2] + n * 1.05));
   }
   ctx.putImageData(img, 0, 0);
 
@@ -92,7 +108,7 @@ export function HeartfeltRainBackground({ active, className }: Props) {
       return;
     }
 
-    const tex = createWarmBackTexture(gl);
+    const tex = createHeartfeltChannel0Texture(gl);
     const locRes = gl.getUniformLocation(prog, 'iResolution');
     const locTime = gl.getUniformLocation(prog, 'iTime');
     const locMouse = gl.getUniformLocation(prog, 'iMouse');

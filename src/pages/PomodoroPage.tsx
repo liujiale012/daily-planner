@@ -51,7 +51,9 @@ function formatTime(seconds: number) {
   return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
 }
 
-const SECOND_HAND_SOUND_LS = 'daily-planner-pomodoro-second-hand';
+const OVERLAY_RAIN_SOUND_LS = 'daily-planner-pomodoro-overlay-rain-on';
+/** 旧版三态：2=全静音，0/1=有雨声 */
+const LEGACY_OVERLAY_SOUND_MODE_LS = 'daily-planner-pomodoro-overlay-sound-mode';
 
 /** 与页面展示一致的剩余秒数快照（用于结束遮罩时结算） */
 function getSafeSecondsLeftSnapshot(): number {
@@ -72,7 +74,7 @@ export function PomodoroPage() {
   const segmentBaselineRemainingRef = useRef<number | null>(null);
   const [focusOverlayOpen, setFocusOverlayOpen] = useState(false);
   const [focusOverlayQuote, setFocusOverlayQuote] = useState('');
-  const [secondHandSoundEnabled, setSecondHandSoundEnabled] = useState(true);
+  const [overlayRainSoundOn, setOverlayRainSoundOn] = useState(true);
   const {
     mode,
     focusMinutes,
@@ -114,9 +116,17 @@ export function PomodoroPage() {
 
   useEffect(() => {
     try {
-      if (localStorage.getItem(SECOND_HAND_SOUND_LS) === '0') {
-        setSecondHandSoundEnabled(false);
+      const rain = localStorage.getItem(OVERLAY_RAIN_SOUND_LS);
+      if (rain === '0') {
+        setOverlayRainSoundOn(false);
+        return;
       }
+      if (rain === '1') {
+        setOverlayRainSoundOn(true);
+        return;
+      }
+      const legacy = localStorage.getItem(LEGACY_OVERLAY_SOUND_MODE_LS);
+      if (legacy === '2') setOverlayRainSoundOn(false);
     } catch {
       /* ignore */
     }
@@ -284,11 +294,11 @@ export function PomodoroPage() {
 
   const moduleLocked = isRunning;
 
-  const toggleSecondHandSound = useCallback(() => {
-    setSecondHandSoundEnabled((on) => {
+  const toggleOverlayRainSound = useCallback(() => {
+    setOverlayRainSoundOn((on) => {
       const next = !on;
       try {
-        localStorage.setItem(SECOND_HAND_SOUND_LS, next ? '1' : '0');
+        localStorage.setItem(OVERLAY_RAIN_SOUND_LS, next ? '1' : '0');
       } catch {
         /* ignore */
       }
@@ -364,8 +374,8 @@ export function PomodoroPage() {
           onRestartSegment={handleOverlayRestartSegment}
           onEndSession={handleOverlayEndSession}
           formatTime={formatTime}
-          secondHandSoundEnabled={secondHandSoundEnabled}
-          onToggleSecondHandSound={toggleSecondHandSound}
+          overlayRainSoundOn={overlayRainSoundOn}
+          onToggleOverlayRainSound={toggleOverlayRainSound}
         />
       ) : null}
       <div className="grid gap-4 md:grid-cols-[minmax(0,2fr)_minmax(0,1.2fr)]">

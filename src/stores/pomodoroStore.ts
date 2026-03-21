@@ -5,7 +5,7 @@ export interface PomodoroSession {
   id: string;
   taskId: string | null;
   finishedAt: string;
-  /** 本轮专注时长（分钟），用于统计 */
+  /** 本轮专注时长（分钟，整数；不足 1 分钟不应写入） */
   durationMinutes: number;
   /** 本轮专注模块（展示用） */
   focusModuleLabel?: string | null;
@@ -77,6 +77,7 @@ export const usePomodoroStore = create<PomodoroState>()(
             {
               id: crypto.randomUUID(),
               ...session,
+              durationMinutes: Math.max(0, Math.floor(Number(session.durationMinutes) || 0)),
             },
           ],
         })),
