@@ -54,6 +54,7 @@ function formatTime(seconds: number) {
 const OVERLAY_RAIN_SOUND_LS = 'daily-planner-pomodoro-overlay-rain-on';
 /** 旧版三态：2=全静音，0/1=有雨声 */
 const LEGACY_OVERLAY_SOUND_MODE_LS = 'daily-planner-pomodoro-overlay-sound-mode';
+const OVERLAY_SCENE_SNOW_LS = 'daily-planner-pomodoro-overlay-scene-snow';
 
 /** 与页面展示一致的剩余秒数快照（用于结束遮罩时结算） */
 function getSafeSecondsLeftSnapshot(): number {
@@ -75,6 +76,7 @@ export function PomodoroPage() {
   const [focusOverlayOpen, setFocusOverlayOpen] = useState(false);
   const [focusOverlayQuote, setFocusOverlayQuote] = useState('');
   const [overlayRainSoundOn, setOverlayRainSoundOn] = useState(true);
+  const [snowSceneOn, setSnowSceneOn] = useState(false);
   const {
     mode,
     focusMinutes,
@@ -127,6 +129,14 @@ export function PomodoroPage() {
       }
       const legacy = localStorage.getItem(LEGACY_OVERLAY_SOUND_MODE_LS);
       if (legacy === '2') setOverlayRainSoundOn(false);
+    } catch {
+      /* ignore */
+    }
+  }, []);
+
+  useEffect(() => {
+    try {
+      setSnowSceneOn(localStorage.getItem(OVERLAY_SCENE_SNOW_LS) === '1');
     } catch {
       /* ignore */
     }
@@ -306,6 +316,18 @@ export function PomodoroPage() {
     });
   }, []);
 
+  const toggleSnowScene = useCallback(() => {
+    setSnowSceneOn((on) => {
+      const next = !on;
+      try {
+        localStorage.setItem(OVERLAY_SCENE_SNOW_LS, next ? '1' : '0');
+      } catch {
+        /* ignore */
+      }
+      return next;
+    });
+  }, []);
+
   const handleOverlayRestartSegment = () => {
     segmentBaselineRemainingRef.current = null;
     if (mode === 'custom') {
@@ -376,6 +398,8 @@ export function PomodoroPage() {
           formatTime={formatTime}
           overlayRainSoundOn={overlayRainSoundOn}
           onToggleOverlayRainSound={toggleOverlayRainSound}
+          snowSceneOn={snowSceneOn}
+          onToggleSnowScene={toggleSnowScene}
         />
       ) : null}
       <div className="grid gap-4 md:grid-cols-[minmax(0,2fr)_minmax(0,1.2fr)]">

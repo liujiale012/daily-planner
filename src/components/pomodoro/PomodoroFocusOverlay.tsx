@@ -1,10 +1,11 @@
 import { useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { Music, Pause, Play, RotateCcw, Square } from 'lucide-react';
+import { Music, Pause, Play, RotateCcw, Snowflake, Square } from 'lucide-react';
 import { Button } from '../ui/button';
 import { resumeWheelAudio } from '../../lib/wheelTick';
 import { startRainAmbience, stopRainAmbience } from '../../lib/rainAmbience';
 import { HeartfeltRainBackground } from './HeartfeltRainBackground';
+import { SnowIsFallingBackground } from './SnowIsFallingBackground';
 
 type PomodoroFocusOverlayProps = {
   open: boolean;
@@ -26,6 +27,8 @@ type PomodoroFocusOverlayProps = {
   /** 雨滴环境音是否开启 */
   overlayRainSoundOn: boolean;
   onToggleOverlayRainSound: () => void;
+  snowSceneOn: boolean;
+  onToggleSnowScene: () => void;
 };
 
 export function PomodoroFocusOverlay({
@@ -42,6 +45,8 @@ export function PomodoroFocusOverlay({
   formatTime,
   overlayRainSoundOn,
   onToggleOverlayRainSound,
+  snowSceneOn,
+  onToggleSnowScene,
 }: PomodoroFocusOverlayProps) {
   useEffect(() => {
     if (!open) {
@@ -81,7 +86,11 @@ export function PomodoroFocusOverlay({
       aria-labelledby="pomodoro-overlay-quote"
       aria-describedby="pomodoro-overlay-time"
     >
-      <HeartfeltRainBackground active className="opacity-100" />
+      {snowSceneOn ? (
+        <SnowIsFallingBackground active className="opacity-100" />
+      ) : (
+        <HeartfeltRainBackground active className="opacity-100" />
+      )}
       <div className="relative z-10 flex min-h-0 flex-1 flex-col px-5 pb-8 pt-10 sm:px-10">
         <p
           id="pomodoro-overlay-quote"
@@ -161,6 +170,23 @@ export function PomodoroFocusOverlay({
             <Square className="h-6 w-6 fill-current" />
           </Button>
         </div>
+        <Button
+          type="button"
+          size="icon"
+          variant="outline"
+          className={`absolute bottom-6 right-6 h-11 w-11 rounded-full border p-0 ${
+            snowSceneOn
+              ? 'border-cyan-200/70 bg-cyan-100/20 text-cyan-100 hover:bg-cyan-100/30'
+              : 'border-white/25 bg-white/10 text-[#fff7ee] hover:bg-white/20'
+          }`}
+          onClick={() => {
+            void resumeWheelAudio();
+            onToggleSnowScene();
+          }}
+          aria-label={snowSceneOn ? '切换回雨滴背景' : '切换到雪景背景'}
+        >
+          <Snowflake className="h-5 w-5" />
+        </Button>
       </div>
     </div>
   );
