@@ -16,8 +16,12 @@ import {
 } from '../lib/pomodoro-focus-module';
 import { getTodayIncompleteTasks, isTaskDueToday } from '../lib/today-tasks-filter';
 import { PomodoroFocusOverlay } from '../components/pomodoro/PomodoroFocusOverlay';
+import { PomodoroCareDialog } from '../components/pomodoro/PomodoroCareDialog';
 import { POMODORO_MOTIVATION_QUOTES } from '../lib/pomodoro-motivation-quotes';
 import { resumeWheelAudio } from '../lib/wheelTick';
+
+/** 连续专注（不含番茄休息段）累计至此秒数时弹出关怀提示并暂停 */
+const CONTINUOUS_FOCUS_CARE_SECONDS = 3 * 60 * 60;
 
 /** 专注结束时写入会话：今日任务模块则绑定 taskId 与展示标签 */
 function getFinishedFocusSessionPayload(): {
@@ -73,7 +77,10 @@ function getSafeSecondsLeftSnapshot(): number {
 export function PomodoroPage() {
   const intervalRef = useRef<number | null>(null);
   const segmentBaselineRemainingRef = useRef<number | null>(null);
+  /** 连续专注累计秒数：仅在「计时中 + 专注段」累加；进入休息或重置时清零 */
+  const continuousFocusSecondsRef = useRef(0);
   const [focusOverlayOpen, setFocusOverlayOpen] = useState(false);
+  const [careBreakOpen, setCareBreakOpen] = useState(false);
   const [focusOverlayQuote, setFocusOverlayQuote] = useState('');
   const [overlayRainSoundOn, setOverlayRainSoundOn] = useState(true);
   const [snowSceneOn, setSnowSceneOn] = useState(false);
@@ -147,6 +154,39 @@ export function PomodoroPage() {
     const ok = todayIncompleteTasks.some((t) => t.id === focusTodayTaskId);
     if (!ok) setFocusTodayTaskId('none');
   }, [focusModule, focusTodayTaskId, todayIncompleteTasks, setFocusTodayTaskId]);
+
+  /** 进入番茄休息段则打断「连续专注」统计 */
+  useEffect(() => {
+    if (mode === 'pomodoro' && isBreak) {
+      continuousFocusSecondsRef.current = 0;
+    }
+  }, [mode, isBreak]);
+
+  /** 切换番茄/自由计时视为节奏打断，清零连续专注 */
+  useEffect(() => {
+    continuousFocusSecondsRef.current = 0;
+  }, [mode]);
+
+  /** 连续高强度专注满 3 小时：强制关怀弹窗并暂停计时 */
+  useEffect(() => {
+    if (!isRunning) return;
+    const inFocusSegment = mode === 'custom' || !isBreak;
+    if (!inFocusSegment) return;
+
+    const tick = window.setInterval(() => {
+      continuousFocusSecondsRef.current += 1;
+      if (continuousFocusSecondsRef.current < CONTINUOUS_FOCUS_CARE_SECONDS) return;
+      continuousFocusSecondsRef.current = 0;
+      usePomodoroStore.getState().setIsRunning(false);
+      if (intervalRef.current) {
+        window.clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+      setCareBreakOpen(true);
+    }, 1000);
+
+    return () => window.clearInterval(tick);
+  }, [isRunning, isBreak, mode]);
 
   /** 本段倒计时开始时的「剩余秒数」，用于结算手动结束时的已专注时长 */
   useEffect(() => {
@@ -233,6 +273,7 @@ export function PomodoroPage() {
   }, [isRunning, isBreak]);
 
   const handleReset = () => {
+    continuousFocusSecondsRef.current = 0;
     segmentBaselineRemainingRef.current = null;
     setIsRunning(false);
     setFocusOverlayOpen(false);
@@ -247,6 +288,7 @@ export function PomodoroPage() {
 
   const handleSwitchMode = () => {
     if (mode === 'custom') return;
+    continuousFocusSecondsRef.current = 0;
     segmentBaselineRemainingRef.current = null;
     setIsRunning(false);
     setFocusOverlayOpen(false);
@@ -380,6 +422,7 @@ export function PomodoroPage() {
 
   return (
     <div className="mx-auto flex max-w-4xl flex-col gap-6 py-4">
+      <PomodoroCareDialog open={careBreakOpen} onAcknowledge={() => setCareBreakOpen(false)} />
       {focusOverlayOpen ? (
         <PomodoroFocusOverlay
           open={focusOverlayOpen}

@@ -1,10 +1,11 @@
 import { NavLink } from 'react-router-dom';
-import { Calendar, CheckSquare, Home, Settings, Timer, MessageCircle } from 'lucide-react';
+import { Calendar, CheckSquare, Home, Settings, Timer, MessageCircle, Smile } from 'lucide-react';
 
 const navItems = [
   { to: '/dashboard', label: '首页', icon: Home },
   { to: '/tasks', label: '任务', icon: CheckSquare },
   { to: '/calendar', label: '日历', icon: Calendar },
+  { to: '/mood', label: '心情记录', icon: Smile },
   { to: '/pomodoro', label: '番茄钟', icon: Timer },
   { to: '/treehole', label: '情绪树洞', icon: MessageCircle },
   { to: '/settings', label: '设置', icon: Settings },

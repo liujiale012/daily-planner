@@ -6,6 +6,7 @@ import { CalendarPage } from './pages/CalendarPage';
 import { PomodoroPage } from './pages/PomodoroPage';
 import { TreeholePage } from './pages/TreeholePage';
 import { SettingsPage } from './pages/SettingsPage';
+import { MoodPage } from './pages/MoodPage';
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
         <Route path="/dashboard" element={<DashboardPage />} />
         <Route path="/tasks" element={<TasksPage />} />
         <Route path="/calendar" element={<CalendarPage />} />
+        <Route path="/mood" element={<MoodPage />} />
         <Route path="/pomodoro" element={<PomodoroPage />} />
         <Route path="/treehole" element={<TreeholePage />} />
         <Route path="/settings" element={<SettingsPage />} />

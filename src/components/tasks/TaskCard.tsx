@@ -1,5 +1,7 @@
+import { useState } from 'react';
 import { Star, Trash2, Edit2 } from 'lucide-react';
 import { toast } from 'sonner';
+import { randomTaskCompleteToast } from '../../lib/task-complete-toasts';
 import type { Task } from '../../types';
 import { Button } from '../ui/button';
 import { Checkbox } from '../ui/checkbox';
@@ -28,25 +30,37 @@ export function TaskCard({
   onEdit,
   onDelete,
 }: TaskCardProps) {
+  const [justCompleted, setJustCompleted] = useState(false);
+  const [checkboxGlow, setCheckboxGlow] = useState(false);
   const overdue = isOverdue(task.deadline, task.completed);
   const remaining = remainingText(task.deadline, task.completed);
 
   return (
     <div
       className={cn(
-        'group flex items-start gap-3 rounded-xl border bg-white p-3 shadow-sm dark:bg-gray-800',
+        'group flex items-start gap-3 rounded-xl border bg-white p-3 shadow-sm transition-shadow duration-300 dark:bg-gray-800',
         overdue && 'border-l-4 border-l-red-500',
         task.completed && 'bg-gray-50 dark:bg-gray-800/80',
-        !overdue && 'border-gray-200 dark:border-gray-700'
+        !overdue && 'border-gray-200 dark:border-gray-700',
+        justCompleted && 'animate-task-complete-pop shadow-md shadow-pink-200/50 ring-1 ring-pink-200/60 dark:shadow-pink-900/20 dark:ring-pink-500/25'
       )}
     >
       <Checkbox
         checked={task.completed}
         onCheckedChange={() => {
           onToggleComplete(task.id);
-          if (!task.completed) toast.success('完成！继续保持～');
+          if (!task.completed) {
+            toast.success(randomTaskCompleteToast());
+            setJustCompleted(true);
+            setCheckboxGlow(true);
+            window.setTimeout(() => setJustCompleted(false), 560);
+            window.setTimeout(() => setCheckboxGlow(false), 700);
+          }
         }}
-        className="mt-0.5 shrink-0"
+        className={cn(
+          'mt-0.5 shrink-0 transition-transform duration-200',
+          checkboxGlow && 'animate-checkbox-spark rounded-full'
+        )}
       />
       <div className="min-w-0 flex-1">
         <p
