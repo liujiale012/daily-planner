@@ -84,7 +84,7 @@ export function PomodoroPage() {
   const [careBreakOpen, setCareBreakOpen] = useState(false);
   const [focusOverlayQuote, setFocusOverlayQuote] = useState('');
   const [overlayRainSoundOn, setOverlayRainSoundOn] = useState(true);
-  const [overlayScene, setOverlayScene] = useState<'rain' | 'snow' | 'rainforest'>('rain');
+  const [overlayScene, setOverlayScene] = useState<'rain' | 'snow'>('rain');
   const {
     mode,
     focusMinutes,
@@ -145,7 +145,7 @@ export function PomodoroPage() {
   useEffect(() => {
     try {
       const scene = localStorage.getItem(OVERLAY_SCENE_LS);
-      if (scene === 'rain' || scene === 'snow' || scene === 'rainforest') {
+      if (scene === 'rain' || scene === 'snow') {
         setOverlayScene(scene);
         return;
       }
@@ -366,8 +366,7 @@ export function PomodoroPage() {
 
   const cycleOverlayScene = useCallback(() => {
     setOverlayScene((current) => {
-      const next =
-        current === 'rain' ? 'snow' : current === 'snow' ? 'rainforest' : 'rain';
+      const next = current === 'rain' ? 'snow' : 'rain';
       const legacySnow = next === 'snow';
       try {
         localStorage.setItem(OVERLAY_SCENE_LS, next);
@@ -417,7 +416,7 @@ export function PomodoroPage() {
       ) {
         const { taskId, focusModuleLabel } = getFinishedFocusSessionPayload();
         if (focusModuleLabel) {
-          const durationMinutes = Math.round((elapsedSec / 60) * 100) / 100;
+          const durationMinutes = Math.max(1, Math.round(elapsedSec / 60));
           st.addSession({
             taskId,
             finishedAt: new Date().toISOString(),

@@ -73,6 +73,8 @@ type Props = {
  * Heartfelt 雨滴玻璃着色器背景（WebGL2）。不支持时由父级底色兜底。
  */
 export function HeartfeltRainBackground({ active, className }: Props) {
+  // Heartfelt 原版前几秒有明显淡入叙事段，给一个时间偏移让雨滴更快出现。
+  const START_TIME_OFFSET_SECONDS = 12;
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const activeRef = useRef(active);
   activeRef.current = active;
@@ -140,7 +142,7 @@ export function HeartfeltRainBackground({ active, className }: Props) {
     const draw = () => {
       if (!activeRef.current) return;
       resize();
-      const t = (performance.now() - t0) / 1000;
+      const t = START_TIME_OFFSET_SECONDS + (performance.now() - t0) / 1000;
       gl.useProgram(prog);
       gl.uniform3f(locRes, canvas.width, canvas.height, 1.0);
       gl.uniform1f(locTime, t);

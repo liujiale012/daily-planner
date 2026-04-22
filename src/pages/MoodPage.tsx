@@ -54,7 +54,7 @@ export function MoodPage() {
         <CardHeader>
           <CardTitle className="text-lg text-slate-800 dark:text-slate-100">记录今天的心情</CardTitle>
           <p className="text-sm font-normal text-[#b58a6a] dark:text-slate-400">
-            选一天、点选心情，可加一句备注。数据只保存在本机浏览器。
+            选一天、点选心情，可加一句备注。
           </p>
         </CardHeader>
         <CardContent className="space-y-5">

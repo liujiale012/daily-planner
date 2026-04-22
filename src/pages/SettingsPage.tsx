@@ -19,8 +19,6 @@ export function SettingsPage() {
   const setTheme = useSettingsStore((s) => s.setTheme);
   const accentColor = useSettingsStore((s) => s.accentColor);
   const setAccentColor = useSettingsStore((s) => s.setAccentColor);
-  const qwenApiKey = useSettingsStore((s) => s.qwenApiKey);
-  const setQwenApiKey = useSettingsStore((s) => s.setQwenApiKey);
   const replaceState = useTaskStore((s) => s.replaceState);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -60,87 +58,71 @@ export function SettingsPage() {
 
   return (
     <div className="space-y-6">
-      <Card>
-        <CardHeader>
-          <CardTitle>外观</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div>
-            <p className="mb-2 text-sm font-medium">主题</p>
-            <div className="flex gap-2">
-              {(['light', 'dark', 'system'] as const).map((t) => (
-                <Button
-                  key={t}
-                  variant={theme === t ? 'default' : 'outline'}
-                  size="sm"
-                  onClick={() => setTheme(t)}
-                >
-                  {t === 'light' ? '浅色' : t === 'dark' ? '深色' : '跟随系统'}
-                </Button>
-              ))}
+      <div className="grid gap-6 xl:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)]">
+        <Card>
+          <CardHeader>
+            <CardTitle>外观</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <div>
+              <p className="mb-2 text-sm font-medium">主题</p>
+              <div className="flex flex-wrap gap-2">
+                {(['light', 'dark', 'system'] as const).map((t) => (
+                  <Button
+                    key={t}
+                    variant={theme === t ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => setTheme(t)}
+                  >
+                    {t === 'light' ? '浅色' : t === 'dark' ? '深色' : '跟随系统'}
+                  </Button>
+                ))}
+              </div>
             </div>
-          </div>
-          <div>
-            <p className="mb-2 text-sm font-medium">强调色</p>
-            <div className="flex gap-2">
-              {ACCENT_OPTIONS.map((opt) => (
-                <button
-                  key={opt.value}
-                  type="button"
-                  onClick={() => setAccentColor(opt.value)}
-                  className={`h-8 w-8 rounded-full ${opt.class} ring-2 ring-offset-2 ${
-                    accentColor === opt.value ? 'ring-gray-900 dark:ring-white' : 'ring-transparent'
-                  }`}
-                  aria-label={opt.label}
-                  title={opt.label}
-                />
-              ))}
+            <div>
+              <p className="mb-2 text-sm font-medium">强调色</p>
+              <div className="flex flex-wrap gap-2">
+                {ACCENT_OPTIONS.map((opt) => (
+                  <button
+                    key={opt.value}
+                    type="button"
+                    onClick={() => setAccentColor(opt.value)}
+                    className={`h-8 w-8 rounded-full ${opt.class} ring-2 ring-offset-2 ${
+                      accentColor === opt.value ? 'ring-gray-900 dark:ring-white' : 'ring-transparent'
+                    }`}
+                    aria-label={opt.label}
+                    title={opt.label}
+                  />
+                ))}
+              </div>
             </div>
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>情绪树洞 · 千问 API</CardTitle>
-          <p className="text-xs font-normal text-gray-500 dark:text-gray-400">
-            线上版本已改为服务端托管 Key，普通用户无需填写。此处仅作为本地记录位（不再参与请求）。
-          </p>
-        </CardHeader>
-        <CardContent>
-          <input
-            type="password"
-            placeholder="线上版无需填写"
-            value={qwenApiKey}
-            onChange={(e) => setQwenApiKey(e.target.value)}
-            className="w-full rounded-md border border-gray-200 bg-white px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[rgb(var(--accent))] dark:border-gray-600 dark:bg-gray-800 dark:placeholder:text-gray-500"
-          />
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>本地数据</CardTitle>
-          <p className="text-xs font-normal text-gray-500 dark:text-gray-400">
-            导出为 JSON 备份，或从备份文件恢复。恢复将覆盖当前数据。
-          </p>
-        </CardHeader>
-        <CardContent className="flex gap-2">
-          <Button variant="outline" onClick={handleExport}>
-            导出备份
-          </Button>
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept=".json"
-            className="hidden"
-            onChange={handleImport}
-          />
-          <Button variant="outline" onClick={() => fileInputRef.current?.click()}>
-            从备份恢复
-          </Button>
-        </CardContent>
-      </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle>本地数据</CardTitle>
+            <p className="text-xs font-normal text-gray-500 dark:text-gray-400">
+              导出为 JSON 备份，或从备份文件恢复。恢复将覆盖当前数据。
+            </p>
+          </CardHeader>
+          <CardContent className="flex flex-wrap gap-2">
+            <Button variant="outline" onClick={handleExport}>
+              导出备份
+            </Button>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept=".json"
+              className="hidden"
+              onChange={handleImport}
+            />
+            <Button variant="outline" onClick={() => fileInputRef.current?.click()}>
+              从备份恢复
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }

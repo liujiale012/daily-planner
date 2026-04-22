@@ -1,11 +1,10 @@
 import { useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { Image as ImageIcon, Music, Pause, Play, RotateCcw, Square } from 'lucide-react';
+import { CloudRain, Music, Pause, Play, RotateCcw, Snowflake, Square } from 'lucide-react';
 import { Button } from '../ui/button';
 import { resumeWheelAudio } from '../../lib/wheelTick';
 import { startRainAmbience, stopRainAmbience } from '../../lib/rainAmbience';
 import { HeartfeltRainBackground } from './HeartfeltRainBackground';
-import { RainforestLandscapeBackground } from './RainforestLandscapeBackground';
 import { SnowIsFallingBackground } from './SnowIsFallingBackground';
 
 type PomodoroFocusOverlayProps = {
@@ -28,7 +27,7 @@ type PomodoroFocusOverlayProps = {
   /** 雨滴环境音是否开启 */
   overlayRainSoundOn: boolean;
   onToggleOverlayRainSound: () => void;
-  overlayScene: 'rain' | 'snow' | 'rainforest';
+  overlayScene: 'rain' | 'snow';
   onCycleOverlayScene: () => void;
 };
 
@@ -89,13 +88,14 @@ export function PomodoroFocusOverlay({
     >
       {overlayScene === 'rain' ? <HeartfeltRainBackground active className="opacity-100" /> : null}
       {overlayScene === 'snow' ? <SnowIsFallingBackground active className="opacity-100" /> : null}
-      {overlayScene === 'rainforest' ? (
-        <RainforestLandscapeBackground active isRunning={isRunning} className="opacity-100" />
-      ) : null}
       <div className="relative z-10 flex min-h-0 flex-1 flex-col px-5 pb-8 pt-10 sm:px-10">
         <p
           id="pomodoro-overlay-quote"
-          className="mx-auto max-w-xl text-center text-sm font-medium leading-relaxed text-[#e8e4e0]/95 drop-shadow-[0_1px_12px_rgba(0,0,0,0.75)] sm:text-base"
+          className={`mx-auto max-w-xl text-center text-sm font-medium leading-relaxed sm:text-base ${
+            overlayScene === 'snow'
+              ? 'text-[#1f2937]/95 drop-shadow-[0_1px_10px_rgba(255,255,255,0.65)]'
+              : 'text-[#e8e4e0]/95 drop-shadow-[0_1px_12px_rgba(0,0,0,0.75)]'
+          }`}
         >
           {quote}
         </p>
@@ -184,9 +184,13 @@ export function PomodoroFocusOverlay({
             void resumeWheelAudio();
             onCycleOverlayScene();
           }}
-          aria-label="切换背景（雨滴/雪景/雨林）"
+          aria-label={overlayScene === 'snow' ? '切换到雨景背景' : '切换到雪景背景'}
         >
-          <ImageIcon className="h-5 w-5" />
+          {overlayScene === 'snow' ? (
+            <Snowflake className="h-5 w-5" />
+          ) : (
+            <CloudRain className="h-5 w-5" />
+          )}
         </Button>
       </div>
     </div>
