@@ -21,12 +21,32 @@
 
 ## 🖼️ 项目预览
 
-本仓库当前未内置截图资源（`screenshots/` 目录不存在）。如果你希望在 README 展示 UI，可在根目录新增 `screenshots/` 并按下方命名放置图片，然后把链接替换为真实文件：
+本仓库当前未内置截图资源（`screenshots/` 目录不存在）。下面先放**图片占位符**：你只要在根目录新增 `screenshots/` 并按同名文件放图，README 会自动显示。
 
 - `screenshots/home.png`：首页（今日任务 / 情绪入口 / 番茄钟状态）
 - `screenshots/mood.png`：情绪记录（按日期选心情 + 备注 + 最近记录）
+- `screenshots/treehole.png`：情绪树洞（AI 对话 / 共情回应）
+- `screenshots/pomodoro.png`：番茄钟页面（番茄模式 / 自由计时 / 专注模块 / 统计）
 - `screenshots/pomodoro-overlay-rain.png`：专注遮罩（雨景 + 雨声音效）
 - `screenshots/pomodoro-overlay-snow.png`：专注遮罩（雪景）
+
+![首页界面（占位）](./screenshots/home.png)
+*首页：今日任务 + 情绪入口 + 番茄钟状态*
+
+![情绪记录（占位）](./screenshots/mood.png)
+*情绪记录：按日期选心情 + 备注，最近记录可回填编辑*
+
+![情绪树洞（占位）](./screenshots/treehole.png)
+*情绪树洞：AI 共情回应，支持多轮对话*
+
+![番茄钟页面（占位）](./screenshots/pomodoro.png)
+*番茄钟：番茄模式 / 自由计时 / 专注模块选择与统计*
+
+![专注遮罩·雨景（占位）](./screenshots/pomodoro-overlay-rain.png)
+*专注遮罩：雨景背景 + 雨滴环境音开关*
+
+![专注遮罩·雪景（占位）](./screenshots/pomodoro-overlay-snow.png)
+*专注遮罩：雪景背景，一键切换场景*
 
 ### 本地运行
 
