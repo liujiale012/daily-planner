@@ -58,6 +58,7 @@ function formatTime(seconds: number) {
 const OVERLAY_RAIN_SOUND_LS = 'daily-planner-pomodoro-overlay-rain-on';
 /** 旧版三态：2=全静音，0/1=有雨声 */
 const LEGACY_OVERLAY_SOUND_MODE_LS = 'daily-planner-pomodoro-overlay-sound-mode';
+const OVERLAY_SCENE_LS = 'daily-planner-pomodoro-overlay-scene';
 const OVERLAY_SCENE_SNOW_LS = 'daily-planner-pomodoro-overlay-scene-snow';
 
 /** 与页面展示一致的剩余秒数快照（用于结束遮罩时结算） */
@@ -83,7 +84,7 @@ export function PomodoroPage() {
   const [careBreakOpen, setCareBreakOpen] = useState(false);
   const [focusOverlayQuote, setFocusOverlayQuote] = useState('');
   const [overlayRainSoundOn, setOverlayRainSoundOn] = useState(true);
-  const [snowSceneOn, setSnowSceneOn] = useState(false);
+  const [overlayScene, setOverlayScene] = useState<'rain' | 'snow' | 'rainforest'>('rain');
   const {
     mode,
     focusMinutes,
@@ -143,7 +144,12 @@ export function PomodoroPage() {
 
   useEffect(() => {
     try {
-      setSnowSceneOn(localStorage.getItem(OVERLAY_SCENE_SNOW_LS) === '1');
+      const scene = localStorage.getItem(OVERLAY_SCENE_LS);
+      if (scene === 'rain' || scene === 'snow' || scene === 'rainforest') {
+        setOverlayScene(scene);
+        return;
+      }
+      setOverlayScene(localStorage.getItem(OVERLAY_SCENE_SNOW_LS) === '1' ? 'snow' : 'rain');
     } catch {
       /* ignore */
     }
@@ -358,11 +364,18 @@ export function PomodoroPage() {
     });
   }, []);
 
-  const toggleSnowScene = useCallback(() => {
-    setSnowSceneOn((on) => {
-      const next = !on;
+  const cycleOverlayScene = useCallback(() => {
+    setOverlayScene((current) => {
+      const next =
+        current === 'rain' ? 'snow' : current === 'snow' ? 'rainforest' : 'rain';
+      const legacySnow = next === 'snow';
       try {
-        localStorage.setItem(OVERLAY_SCENE_SNOW_LS, next ? '1' : '0');
+        localStorage.setItem(OVERLAY_SCENE_LS, next);
+      } catch {
+        /* ignore */
+      }
+      try {
+        localStorage.setItem(OVERLAY_SCENE_SNOW_LS, legacySnow ? '1' : '0');
       } catch {
         /* ignore */
       }
@@ -441,8 +454,8 @@ export function PomodoroPage() {
           formatTime={formatTime}
           overlayRainSoundOn={overlayRainSoundOn}
           onToggleOverlayRainSound={toggleOverlayRainSound}
-          snowSceneOn={snowSceneOn}
-          onToggleSnowScene={toggleSnowScene}
+          overlayScene={overlayScene}
+          onCycleOverlayScene={cycleOverlayScene}
         />
       ) : null}
       <div className="grid gap-4 md:grid-cols-[minmax(0,2fr)_minmax(0,1.2fr)]">

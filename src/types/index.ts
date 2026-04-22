@@ -29,10 +29,14 @@ export interface Settings {
 }
 
 export const DEFAULT_CATEGORIES = ['工作', '学习', '生活', '健身', '购物'];
+const ENV_QWEN_API_KEY =
+  typeof import.meta !== 'undefined' && typeof import.meta.env?.VITE_QWEN_API_KEY === 'string'
+    ? import.meta.env.VITE_QWEN_API_KEY.trim()
+    : '';
 export const DEFAULT_SETTINGS: Settings = {
   theme: 'light',
   calendarView: 'month',
   todayGoal: '',
   accentColor: 'indigo',
-  qwenApiKey: '',
+  qwenApiKey: ENV_QWEN_API_KEY,
 };

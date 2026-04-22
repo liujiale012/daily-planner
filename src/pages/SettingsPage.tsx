@@ -104,13 +104,13 @@ export function SettingsPage() {
         <CardHeader>
           <CardTitle>情绪树洞 · 千问 API</CardTitle>
           <p className="text-xs font-normal text-gray-500 dark:text-gray-400">
-            填写通义千问 API Key 后，可在「情绪树洞」中与千问对话排解情绪。Key 仅存于本机。
+            线上版本已改为服务端托管 Key，普通用户无需填写。此处仅作为本地记录位（不再参与请求）。
           </p>
         </CardHeader>
         <CardContent>
           <input
             type="password"
-            placeholder="sk-..."
+            placeholder="线上版无需填写"
             value={qwenApiKey}
             onChange={(e) => setQwenApiKey(e.target.value)}
             className="w-full rounded-md border border-gray-200 bg-white px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[rgb(var(--accent))] dark:border-gray-600 dark:bg-gray-800 dark:placeholder:text-gray-500"

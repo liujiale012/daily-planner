@@ -1,20 +1,13 @@
-const DASHSCOPE_CHAT_URL = 'https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions';
-
 export interface ChatMessage {
   role: 'user' | 'assistant' | 'system';
   content: string;
 }
 
-export async function chatWithQwen(
-  apiKey: string,
-  messages: ChatMessage[],
-  model = 'qwen-turbo'
-): Promise<string> {
-  const res = await fetch(DASHSCOPE_CHAT_URL, {
+export async function chatWithQwen(messages: ChatMessage[], model = 'qwen3-max'): Promise<string> {
+  const res = await fetch('/api/qwen-chat', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      Authorization: `Bearer ${apiKey}`,
     },
     body: JSON.stringify({
       model,
@@ -25,7 +18,7 @@ export async function chatWithQwen(
 
   if (!res.ok) {
     const err = await res.text();
-    throw new Error(res.status === 401 ? 'API Key 无效或已过期' : err || `请求失败 ${res.status}`);
+    throw new Error(err || `请求失败 ${res.status}`);
   }
 
   const data = await res.json();
