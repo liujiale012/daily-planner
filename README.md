@@ -180,8 +180,8 @@
 ![专注遮罩（雨景）](./screenshots/pomodoro-overlay-rain.png)
 *专注遮罩：在专注进行时进入沉浸式界面，通过动态场景与环境音减少打扰、提升投入感。*
 
-./screenshots/pomodoro-overlay-snow.png
-
+![专注遮罩（雪景）](./screenshots/pomodoro-overlay-snow.png)  
+*专注遮罩：雪景专注模式，支持一键切换场景，营造更柔和的沉浸式专注氛围。*
 
 ---
 
