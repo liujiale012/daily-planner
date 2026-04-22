@@ -155,12 +155,12 @@ export function MinuteWheelPicker({
       {isH ? (
         <div
           className="pointer-events-none absolute bottom-2 top-2 z-[1] rounded-xl border border-[rgb(var(--accent))]/25 bg-[rgb(var(--accent))]/5"
-          style={{ left: PAD, width: ITEM }}
+          style={{ left: '50%', width: ITEM, transform: 'translateX(-50%)' }}
         />
       ) : (
         <div
           className="pointer-events-none absolute left-2 right-2 z-[1] rounded-xl border border-[rgb(var(--accent))]/25 bg-[rgb(var(--accent))]/5"
-          style={{ top: PAD, height: ITEM }}
+          style={{ top: '50%', height: ITEM, transform: 'translateY(-50%)' }}
         />
       )}
       <div
