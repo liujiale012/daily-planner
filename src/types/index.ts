@@ -18,7 +18,16 @@ export interface Task {
   completedAt: string | null;
 }
 
-export type AccentColor = 'indigo' | 'emerald' | 'violet' | 'rose';
+export type AccentColor =
+  | 'orange'
+  | 'indigo'
+  | 'emerald'
+  | 'violet'
+  | 'rose'
+  | 'sky'
+  | 'amber'
+  | 'teal'
+  | 'fuchsia';
 
 export interface Settings {
   theme: 'light' | 'dark' | 'system';

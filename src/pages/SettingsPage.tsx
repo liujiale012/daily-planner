@@ -12,11 +12,14 @@ const ACCENT_OPTIONS: { value: AccentColor; label: string; class: string }[] = [
   { value: 'emerald', label: '翠绿', class: 'bg-emerald-500' },
   { value: 'violet', label: '紫色', class: 'bg-violet-500' },
   { value: 'rose', label: '玫瑰', class: 'bg-rose-500' },
+  { value: 'sky', label: '天青', class: 'bg-sky-500' },
+  { value: 'amber', label: '琥珀', class: 'bg-amber-500' },
+  { value: 'teal', label: '蓝绿', class: 'bg-teal-500' },
+  { value: 'fuchsia', label: '洋红', class: 'bg-fuchsia-500' },
+  { value: 'orange', label: '原始橙', class: 'bg-orange-500' },
 ];
 
 export function SettingsPage() {
-  const theme = useSettingsStore((s) => s.theme);
-  const setTheme = useSettingsStore((s) => s.setTheme);
   const accentColor = useSettingsStore((s) => s.accentColor);
   const setAccentColor = useSettingsStore((s) => s.setAccentColor);
   const replaceState = useTaskStore((s) => s.replaceState);
@@ -65,22 +68,7 @@ export function SettingsPage() {
           </CardHeader>
           <CardContent className="space-y-6">
             <div>
-              <p className="mb-2 text-sm font-medium">主题</p>
-              <div className="flex flex-wrap gap-2">
-                {(['light', 'dark', 'system'] as const).map((t) => (
-                  <Button
-                    key={t}
-                    variant={theme === t ? 'default' : 'outline'}
-                    size="sm"
-                    onClick={() => setTheme(t)}
-                  >
-                    {t === 'light' ? '浅色' : t === 'dark' ? '深色' : '跟随系统'}
-                  </Button>
-                ))}
-              </div>
-            </div>
-            <div>
-              <p className="mb-2 text-sm font-medium">强调色</p>
+              <p className="mb-2 text-sm font-medium">主题色</p>
               <div className="flex flex-wrap gap-2">
                 {ACCENT_OPTIONS.map((opt) => (
                   <button

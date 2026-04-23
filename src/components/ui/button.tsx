@@ -4,15 +4,15 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '../../lib/utils';
 
 const buttonVariants = cva(
-  'inline-flex items-center justify-center rounded-full text-sm font-medium shadow-[0_10px_30px_rgba(244,114,182,0.35)] transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent))] focus-visible:ring-offset-2 focus-visible:ring-offset-white disabled:pointer-events-none disabled:opacity-50',
+  'inline-flex items-center justify-center rounded-full text-sm font-medium shadow-[0_10px_30px_rgba(var(--accent),0.3)] transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent))] focus-visible:ring-offset-2 focus-visible:ring-offset-white disabled:pointer-events-none disabled:opacity-50',
   {
     variants: {
       variant: {
         default:
           'text-white bg-[rgb(var(--accent))] hover:brightness-110 active:translate-y-[1px]',
         outline:
-          'border border-pink-100/70 bg-white/70 text-pink-500 hover:bg-pink-50/80',
-        ghost: 'bg-transparent hover:bg-pink-50/60 text-pink-500',
+          'border border-[rgba(var(--accent),0.2)] bg-white/70 text-[rgb(var(--accent))] hover:bg-[rgba(var(--accent),0.08)]',
+        ghost: 'bg-transparent text-[rgb(var(--accent))] hover:bg-[rgba(var(--accent),0.08)]',
       },
       size: {
         default: 'h-9 px-5',

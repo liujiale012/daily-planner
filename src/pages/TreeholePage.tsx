@@ -6,6 +6,7 @@ import { Input } from '../components/ui/input';
 import { chatWithQwen, type ChatMessage } from '../lib/qwen';
 import kb from '../../rag_knowledge_base_v2.md?raw';
 import { retrieveLocalRagContext } from '../lib/localRag';
+import { getTreeholeRecentContext } from '../lib/treehole-recent-context';
 import { toast } from 'sonner';
 
 const TREEHOLE_STORAGE_PREFIX = 'daily-planner-treehole';
@@ -105,10 +106,17 @@ export function TreeholePage() {
       topK: 3,
       maxCharsPerChunk: 900,
     });
-    const systemPrompt =
-      contextText.trim().length > 0
-        ? `${SYSTEM_PROMPT_BASE}\n\n下面是与你当前处境相关的一些参考片段，请自然地融合在回复里，不要逐字照抄，也不要说“我在检索/知识库/片段”。\n\n${contextText}`
-        : SYSTEM_PROMPT_BASE;
+    const recentContextText = getTreeholeRecentContext(30);
+    const promptSections = [SYSTEM_PROMPT_BASE];
+    if (recentContextText.trim().length > 0) {
+      promptSections.push(recentContextText);
+    }
+    if (contextText.trim().length > 0) {
+      promptSections.push(
+        `下面是与你当前处境相关的一些参考片段，请自然地融合在回复里，不要逐字照抄，也不要说“我在检索/知识库/片段”。\n\n${contextText}`
+      );
+    }
+    const systemPrompt = promptSections.join('\n\n');
 
     setInput('');
     const userMsg: ChatMessage = { role: 'user', content: text };
@@ -130,32 +138,40 @@ export function TreeholePage() {
   };
 
   return (
-    <div className="flex h-[calc(100vh-4rem)] flex-col rounded-[36px] bg-gradient-to-b from-[#ffd7b8] via-[#ffe6cf] to-[#ffd1e3] px-10 py-8 text-[#73412d]">
+    <div
+      className="flex h-[calc(100vh-4rem)] flex-col rounded-[36px] border border-white/35 px-10 py-8 text-slate-700 backdrop-blur-xl"
+      style={{
+        background:
+          'linear-gradient(to bottom, rgba(var(--accent),0.3), rgba(var(--accent),0.18) 45%, rgba(var(--accent),0.1))',
+        boxShadow:
+          '0 24px 70px rgba(var(--accent),0.18), 0 10px 26px rgba(15,23,42,0.12), inset 0 1px 0 rgba(255,255,255,0.45), inset 0 -1px 0 rgba(255,255,255,0.16)',
+      }}
+    >
       <header className="mb-4 flex items-center justify-between">
         <div>
-          <p className="text-sm opacity-80">
+          <p className="text-sm text-slate-700/85">
             {now.format('YYYY年M月D日')} {['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'][now.day()]}
           </p>
-          <p className="mt-1 text-xs opacity-70">今天也把事情愉快安排清楚吧</p>
+          <p className="mt-1 text-xs text-slate-600/80">今天也把事情愉快安排清楚吧</p>
         </div>
-        <Cloud className="h-5 w-5 opacity-70" />
+        <Cloud className="h-5 w-5 text-[rgb(var(--accent))]/70" />
       </header>
 
-      <main className="flex min-h-0 flex-1 gap-6 rounded-[32px] bg-[#fff9ee]/80 p-6 shadow-inner">
-        <section className="flex min-h-0 flex-1 flex-col rounded-3xl border border-[#f4e2c5] bg-[#fffaf1] px-6 py-5 shadow-[0_18px_60px_rgba(190,140,90,0.18)]">
-          <p className="mb-1 text-xs text-[#c9a985]">
+      <main className="flex min-h-0 flex-1 gap-6 rounded-[32px] bg-[rgba(var(--surface-bg-rgb),0.72)] p-6 shadow-inner">
+        <section className="flex min-h-0 flex-1 flex-col rounded-3xl border border-[rgba(var(--surface-border-rgb),0.75)] bg-[rgba(var(--surface-bg-rgb),0.9)] px-6 py-5 shadow-[0_18px_60px_rgba(var(--surface-shadow-rgb),0.2)]">
+          <p className="mb-1 text-xs text-[rgb(var(--accent))]/70">
             随便说点什么吧，我会在这里听。
           </p>
           {messages.length > 0 && (
-            <p className="mb-3 text-[11px] leading-relaxed text-[#b58a6a]">
+            <p className="mb-3 text-[11px] leading-relaxed text-slate-500">
               <button
                 type="button"
                 onClick={() => setHistoryExpanded((v) => !v)}
-                className="cursor-pointer border-0 bg-transparent p-0 text-left underline decoration-[#c9a985]/80 underline-offset-2 transition-colors hover:text-[#a96d4b] hover:decoration-[#a96d4b]"
+                className="cursor-pointer border-0 bg-transparent p-0 text-left underline decoration-[rgba(var(--accent),0.45)] underline-offset-2 transition-colors hover:text-[rgb(var(--accent))] hover:decoration-[rgb(var(--accent))]"
               >
                 {historyExpanded ? '收起历史聊天记录' : '点击查看历史聊天记录'}
               </button>
-              <span className="ml-2 text-[#c9a985]/90">
+              <span className="ml-2 text-slate-500/90">
                 （仅保存当天，次日自动重新开始）
               </span>
             </p>
@@ -164,10 +180,10 @@ export function TreeholePage() {
           {historyExpanded ? (
             <div
               ref={listRef}
-              className="min-h-0 flex-1 space-y-3 overflow-y-auto pr-2 text-sm leading-relaxed text-[#80543b]"
+              className="min-h-0 flex-1 space-y-3 overflow-y-auto pr-2 text-sm leading-relaxed text-slate-700"
             >
               {messages.length === 0 && !loading && (
-                <p className="mt-8 text-center text-xs text-[#c9a985]">
+                <p className="mt-8 text-center text-xs text-slate-500">
                   把你的烦恼轻轻写在这里吧…
                 </p>
               )}
@@ -175,19 +191,19 @@ export function TreeholePage() {
                 <p
                   key={`${todayStr}-${i}-${msg.role}`}
                   className={`whitespace-pre-wrap ${
-                    msg.role === 'user' ? 'text-right text-[#a96d4b]' : 'text-left'
+                    msg.role === 'user' ? 'text-right text-[rgb(var(--accent))]' : 'text-left'
                   }`}
                 >
                   {msg.content}
                 </p>
               ))}
               {loading && (
-                <p className="text-xs text-[#c9a985]">正在认真听你说话中…</p>
+                <p className="text-xs text-slate-500">正在认真听你说话中…</p>
               )}
             </div>
           ) : (
-            <div className="flex min-h-[120px] flex-1 flex-col items-center justify-center rounded-2xl border border-dashed border-[#f0dfc8] bg-[#fffdf9]/80 px-4 py-6 text-center">
-              <p className="text-xs text-[#c9a985]">
+            <div className="flex min-h-[120px] flex-1 flex-col items-center justify-center rounded-2xl border border-dashed border-[rgba(var(--surface-border-rgb),0.9)] bg-white/75 px-4 py-6 text-center">
+              <p className="text-xs text-slate-500">
                 今天的对话已暂时收起，点击下方链接可向上翻阅全部记录。
               </p>
             </div>
@@ -255,7 +271,7 @@ export function TreeholePage() {
           disabled={loading || !input.trim()}
           size="icon"
           aria-label="发送"
-          className="ml-2 h-8 w-8 rounded-full bg-[#ff9fb5] text-white shadow-md hover:bg-[#ff87a4]"
+          className="ml-2 h-8 w-8 rounded-full bg-[rgb(var(--accent))] text-white shadow-md hover:brightness-110"
         >
           <Send className="h-4 w-4" />
         </Button>

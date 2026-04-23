@@ -6,8 +6,12 @@ body {
   margin: 0;
   min-height: 100vh;
   font-family: system-ui, -apple-system, sans-serif;
-  /* 橙色系背景，参考示例海报 */
-  background: radial-gradient(circle at top left, #f9632f 0, #ffb06a 40%, #fff3e2 100%);
+  background: radial-gradient(
+    circle at top left,
+    var(--app-bg-from) 0,
+    var(--app-bg-via) 40%,
+    var(--app-bg-to) 100%
+  );
   color: #2b1c1a;
 }
 
@@ -40,8 +44,13 @@ html.dark body {
 }
 
 :root {
-  /* 橙色主强调色，参考示例海报 */
-  --accent: 249 99 47; /* #F9632F */
+  --accent: 79 70 229;
+  --app-bg-from: #4f46e5;
+  --app-bg-via: #8b8cf8;
+  --app-bg-to: #eef2ff;
+  --surface-bg-rgb: 241 242 255;
+  --surface-border-rgb: 199 210 254;
+  --surface-shadow-rgb: 99 102 241;
 }
 
 /* 番茄钟滑轮：隐藏滚动条但保留滚动 */

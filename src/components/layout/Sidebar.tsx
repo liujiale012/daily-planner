@@ -16,7 +16,7 @@ export function Sidebar() {
     <aside className="hidden h-screen w-64 flex-shrink-0 bg-transparent lg:flex">
       <div className="flex h-full flex-col">
         <div className="px-6 py-6">
-          <span className="text-xl font-semibold tracking-tight text-pink-500">
+          <span className="text-xl font-semibold tracking-tight text-[rgb(var(--accent))]">
             Daily Planner
           </span>
         </div>
@@ -28,8 +28,8 @@ export function Sidebar() {
               className={({ isActive }) =>
                 `flex items-center gap-3 rounded-2xl px-4 py-2.5 text-sm font-medium transition-all ${
                   isActive
-                    ? 'bg-white/80 text-pink-500 shadow-[0_12px_30px_rgba(244,114,182,0.35)]'
-                    : 'text-slate-500 hover:bg-white/60 hover:text-pink-500'
+                    ? 'bg-white/80 text-[rgb(var(--accent))] shadow-[0_12px_30px_rgba(var(--accent),0.28)]'
+                    : 'text-slate-500 hover:bg-white/60 hover:text-[rgb(var(--accent))]'
                 }`
               }
             >

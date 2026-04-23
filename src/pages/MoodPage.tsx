@@ -50,7 +50,7 @@ export function MoodPage() {
 
   return (
     <div className="mx-auto flex max-w-3xl flex-col gap-6 py-4">
-      <Card className="border-[#f5e7d0]/90 bg-[#fffaf7]/80 dark:border-slate-700 dark:bg-slate-900/40">
+      <Card className="dark:border-slate-700 dark:bg-slate-900/40">
         <CardHeader>
           <CardTitle className="text-lg text-slate-800 dark:text-slate-100">记录今天的心情</CardTitle>
           <p className="text-sm font-normal text-[#b58a6a] dark:text-slate-400">
@@ -76,14 +76,14 @@ export function MoodPage() {
                     setNote('');
                   }
                 }}
-                className="w-[200px] rounded-xl border-[#f5e7d0] bg-white/90 dark:border-slate-600 dark:bg-slate-800"
+                className="w-[200px] rounded-xl border-[rgba(var(--surface-border-rgb),0.75)] bg-white/90 dark:border-slate-600 dark:bg-slate-800"
               />
             </label>
             <Button
               type="button"
               variant="outline"
               size="sm"
-              className="rounded-xl border-pink-200 text-pink-600 hover:bg-pink-50 dark:border-pink-800 dark:text-pink-300 dark:hover:bg-pink-950/40"
+              className="rounded-xl"
               onClick={() => loadDayIntoForm(todayKey)}
             >
               跳到今日
@@ -103,8 +103,8 @@ export function MoodPage() {
                     className={cn(
                       'flex flex-col items-start gap-0.5 rounded-2xl border px-3 py-3 text-left transition-all',
                       active
-                        ? 'border-pink-400 bg-pink-50 shadow-[0_8px_24px_rgba(244,114,182,0.25)] dark:border-pink-500 dark:bg-pink-950/50'
-                        : 'border-[#f5e7d0] bg-white/70 hover:border-pink-200 hover:bg-pink-50/40 dark:border-slate-600 dark:bg-slate-800/50 dark:hover:border-pink-800'
+                        ? 'border-[rgba(var(--accent),0.45)] bg-[rgba(var(--accent),0.1)] shadow-[0_8px_24px_rgba(var(--accent),0.2)] dark:border-[rgba(var(--accent),0.6)] dark:bg-[rgba(var(--accent),0.2)]'
+                        : 'border-[rgba(var(--surface-border-rgb),0.75)] bg-white/70 hover:border-[rgba(var(--accent),0.3)] hover:bg-[rgba(var(--accent),0.06)] dark:border-slate-600 dark:bg-slate-800/50 dark:hover:border-[rgba(var(--accent),0.5)]'
                     )}
                   >
                     <span className="text-xl leading-none" aria-hidden>
@@ -126,14 +126,14 @@ export function MoodPage() {
               rows={3}
               maxLength={500}
               placeholder="写一句给自己看的话…"
-              className="resize-none rounded-2xl border border-[#f5e7d0] bg-white/90 px-3 py-2 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-pink-300 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100"
+              className="resize-none rounded-2xl border border-[rgba(var(--surface-border-rgb),0.75)] bg-white/90 px-3 py-2 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[rgba(var(--accent),0.45)] dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100"
             />
           </label>
 
           <div className="flex flex-wrap gap-2">
             <Button
               type="button"
-              className="rounded-2xl bg-gradient-to-r from-pink-500 to-rose-500 px-6 shadow-md shadow-pink-300/30 hover:from-pink-600 hover:to-rose-600 dark:shadow-pink-900/20"
+              className="rounded-2xl px-6"
               disabled={!selectedMood}
               onClick={handleSave}
             >
@@ -165,7 +165,7 @@ export function MoodPage() {
         </CardHeader>
         <CardContent>
           {recentRows.length === 0 ? (
-            <p className="rounded-2xl border border-dashed border-[#f5e7d0] bg-[#fff7ee] py-10 text-center text-sm text-[#b58a6a] dark:border-slate-600 dark:bg-slate-800/30 dark:text-slate-400">
+            <p className="rounded-2xl border border-dashed border-[rgba(var(--surface-border-rgb),0.9)] bg-[rgba(var(--surface-bg-rgb),0.85)] py-10 text-center text-sm text-[#b58a6a] dark:border-slate-600 dark:bg-slate-800/30 dark:text-slate-400">
               还没有记录，先从上面选个心情吧～
             </p>
           ) : (
@@ -177,13 +177,13 @@ export function MoodPage() {
                     <button
                       type="button"
                       onClick={() => loadDayIntoForm(row.dateKey)}
-                      className="flex w-full items-start gap-3 rounded-2xl border border-[#f5e7d0] bg-white/80 px-4 py-3 text-left transition hover:border-pink-200 hover:bg-pink-50/30 dark:border-slate-600 dark:bg-slate-800/40 dark:hover:border-pink-800"
+                      className="flex w-full items-start gap-3 rounded-2xl border border-[rgba(var(--surface-border-rgb),0.85)] bg-white/80 px-4 py-3 text-left transition hover:border-[rgba(var(--accent),0.3)] hover:bg-[rgba(var(--accent),0.06)] dark:border-slate-600 dark:bg-slate-800/40 dark:hover:border-[rgba(var(--accent),0.5)]"
                     >
                       <span className="text-2xl leading-none">{meta?.emoji ?? '·'}</span>
                       <div className="min-w-0 flex-1">
                         <p className="text-sm font-medium text-slate-800 dark:text-slate-100">
                           {dayjs(row.dateKey).format('YYYY年M月D日')}
-                          <span className="ml-2 text-pink-500 dark:text-pink-400">{meta?.label}</span>
+                          <span className="ml-2 text-[rgb(var(--accent))] dark:text-[rgb(var(--accent))]">{meta?.label}</span>
                         </p>
                         {row.note ? (
                           <p className="mt-1 line-clamp-2 text-xs text-slate-500 dark:text-slate-400">

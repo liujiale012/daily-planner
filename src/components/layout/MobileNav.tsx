@@ -20,7 +20,7 @@ export function MobileNav() {
           to={to}
           className={({ isActive }) =>
             `flex flex-1 flex-col items-center gap-1 py-2 text-xs ${
-              isActive ? 'text-indigo-600' : 'text-gray-500 dark:hover:text-gray-100'
+              isActive ? 'text-[rgb(var(--accent))]' : 'text-gray-500 dark:hover:text-gray-100'
             }`
           }
         >
