@@ -145,7 +145,7 @@ export function MinuteWheelPicker({
   return (
     <div
       className={cn(
-        'relative min-w-0 rounded-2xl border border-[#f5e7d0]/90 bg-[#fffaf5]/95 shadow-inner dark:border-slate-700 dark:bg-slate-900/60',
+        'relative min-w-0 rounded-2xl border border-[rgba(var(--surface-border-rgb),0.7)] bg-[rgba(var(--surface-bg-rgb),0.9)] shadow-inner dark:border-slate-700 dark:bg-slate-900/60',
         isH ? 'mx-auto w-full max-w-md' : 'flex flex-col items-center',
         disabled && 'pointer-events-none opacity-50',
         className
@@ -181,8 +181,9 @@ export function MinuteWheelPicker({
             ? {
                 height: ITEM + 16,
                 scrollSnapType: 'x mandatory',
-                paddingLeft: PAD,
-                paddingRight: PAD,
+                // Keep the snapped item always at visual center for any container width.
+                paddingLeft: `calc(50% - ${ITEM / 2}px)`,
+                paddingRight: `calc(50% - ${ITEM / 2}px)`,
                 WebkitOverflowScrolling: 'touch',
               }
             : {
@@ -214,8 +215,8 @@ export function MinuteWheelPicker({
               'flex shrink-0 items-center justify-center text-sm font-medium transition-colors',
               isH ? 'min-w-[44px]' : 'w-full',
               m === value
-                ? 'text-[#3f2a23] dark:text-slate-100'
-                : 'text-[#b58a6a]/80 dark:text-slate-400'
+                ? 'text-[rgb(var(--accent))] dark:text-indigo-300'
+                : 'text-slate-500 dark:text-slate-400'
             )}
             style={
               isH
