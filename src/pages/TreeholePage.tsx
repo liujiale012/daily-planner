@@ -191,7 +191,9 @@ export function TreeholePage() {
                 <p
                   key={`${todayStr}-${i}-${msg.role}`}
                   className={`whitespace-pre-wrap ${
-                    msg.role === 'user' ? 'text-right text-[rgb(var(--accent))]' : 'text-left'
+                    msg.role === 'user'
+                      ? 'ml-auto w-fit max-w-[85%] rounded-2xl border border-white/45 bg-[rgba(var(--accent),0.12)] px-3 py-1.5 text-right text-slate-700 shadow-[0_6px_18px_rgba(var(--accent),0.16)] backdrop-blur-sm'
+                      : 'text-left'
                   }`}
                 >
                   {msg.content}
