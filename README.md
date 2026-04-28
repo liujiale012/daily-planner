@@ -199,7 +199,7 @@
 
 > 该机制用于提升产品安全性，但不能替代专业心理咨询或紧急干预服务。
 
-![情绪树洞熔断（占位）](./screenshots/treehole-safety-breaker-placeholder.png)
+![情绪树洞熔断（占位）](./screenshots/treehole-safety-breaker-placeholder.jpg)
 *安全熔断占位图：展示情绪树洞场景下触发高风险识别后，中断常规回复并给出安全提示与求助引导。*
 
 ---
@@ -215,7 +215,7 @@
 * 本地数据导出为 JSON
 * 从 JSON 备份恢复数据（覆盖式恢复）
 
-![主题色全局联动（占位）](./screenshots/theme-global-color-placeholder.png)
+![主题色全局联动（占位）](./screenshots/theme-global-color-placeholder.jpg)
 *主题色联动占位图：展示在设置中调整主题色后，按钮、标签、状态块等全局组件颜色同步变化。*
 
 ---
